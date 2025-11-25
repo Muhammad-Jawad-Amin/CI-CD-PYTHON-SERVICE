@@ -118,7 +118,7 @@ jobs:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
         run: |
-          ssh -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} << 'EOF'
+          ssh -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} << EOF
             # Ensure Docker commands work
             sudo apt update
             sudo apt install -y docker.io docker-compose
