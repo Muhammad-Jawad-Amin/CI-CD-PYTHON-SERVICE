@@ -1,0 +1,55 @@
+services:
+  db:
+    image: postgres:18-alpine
+    container_name: library_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: libraryuser
+      POSTGRES_PASSWORD: librarypass
+      POSTGRES_DB: librarydb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U libraryuser -d librarydb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: library_app
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://libraryuser:librarypass@db:5432/librarydb
+      AUTH_KEY: ${AUTH_KEY:-production-secret-key}
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - .:/app
+
+  tests:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: library_tests
+    command: pytest -v
+    environment:
+      DATABASE_URL: sqlite:///./test.db
+      AUTH_KEY: dev-secret-key-12345
+    volumes:
+      - .:/app
+    depends_on:
+      - app
+    profiles:
+      - test
+
+volumes:
+  postgres_data:
+    driver: local
