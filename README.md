@@ -58,7 +58,7 @@ Authors (1) ----< (N) Books (1) ----< (N) Loan Records
 1. **Clone the repository**
    ```bash
    git clone <repository-url>
-   cd library-api
+   cd repository-directory
    ```
 
 2. **Create virtual environment**
@@ -80,7 +80,7 @@ Authors (1) ----< (N) Books (1) ----< (N) Loan Records
 
 5. **Run the application**
    ```bash
-   uvicorn main:app --reload
+   python main.py
    ```
 
 6. **Access the API**
@@ -257,51 +257,6 @@ library-api/
 └── README.md            # This file
 ```
 
-## Database Internals
-
-### SQLAlchemy Session Management
-
-**How Sessions Work:**
-1. `SessionLocal()` creates a new database session (transaction)
-2. Session tracks all changes to objects (inserts, updates, deletes)
-3. `commit()` flushes changes to database and commits transaction
-4. `refresh()` reloads object from database to get auto-generated values
-5. `close()` releases connection back to pool
-
-### Connection Pooling
-
-SQLAlchemy maintains a connection pool to reuse database connections:
-- Reduces overhead of creating new connections
-- Limits maximum concurrent connections
-- Automatically handles connection lifecycle
-
-### Query Optimization
-
-The API uses several optimization techniques:
-- **Eager Loading**: `joinedload()` prevents N+1 query problem
-- **Indexing**: Key columns (id, isbn, name) have database indexes
-- **Pagination**: `offset()` and `limit()` prevent loading entire tables
-
-## Security Considerations
-
-1. **API Key Storage**: Store AUTH_KEY in environment variables, never in code
-2. **Database Credentials**: Use strong passwords and limit network access
-3. **SQL Injection**: SQLAlchemy ORM parameterizes queries automatically
-4. **Input Validation**: Pydantic validates all input data before processing
-5. **HTTPS**: Use HTTPS in production (configure at reverse proxy level)
-
-## Production Deployment Checklist
-
-- [ ] Change `AUTH_KEY` to strong, random value
-- [ ] Use PostgreSQL instead of SQLite
-- [ ] Set up database backups
-- [ ] Configure HTTPS with SSL certificates
-- [ ] Set up monitoring and logging
-- [ ] Configure firewall rules
-- [ ] Use Docker secrets for sensitive data
-- [ ] Set up database connection pooling limits
-- [ ] Configure Uvicorn workers for concurrency
-- [ ] Set up health checks and alerts
 
 ## Troubleshooting
 
@@ -344,23 +299,6 @@ pytest test_main.py::test_create_author_success -v
 pytest --pdb
 ```
 
-## Performance Considerations
-
-### Database Optimization
-- Indexes on frequently queried columns (id, isbn, genre)
-- Foreign key constraints for referential integrity
-- Connection pooling to reuse database connections
-
-### API Performance
-- Pagination prevents loading entire tables
-- Eager loading prevents N+1 query problems
-- Response models limit serialized data
-
-### Scaling
-- Horizontal scaling: Multiple app containers behind load balancer
-- Vertical scaling: Increase container resources
-- Database replication: Read replicas for query distribution
-
 ## Contributing
 
 1. Fork the repository
@@ -372,10 +310,3 @@ pytest --pdb
 ## License
 
 This project is licensed under the MIT License.
-
-## Support
-
-For issues and questions:
-- Open an issue on GitHub
-- Check existing issues for solutions
-- Review the API documentation at `/docs`
