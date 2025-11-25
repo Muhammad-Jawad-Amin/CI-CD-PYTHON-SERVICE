@@ -123,10 +123,6 @@ jobs:
             sudo apt update
             sudo apt install -y docker.io docker-compose
 
-            # Navigate to app directory (create if missing)
-            mkdir -p /home/${EC2_USER}/library-api
-            cd /home/${EC2_USER}/library-api
-
             # Docker login
             echo "$DOCKER_PASSWORD" | sudo docker login -u "$DOCKER_USERNAME" --password-stdin
 
