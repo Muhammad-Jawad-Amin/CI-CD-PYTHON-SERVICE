@@ -118,48 +118,31 @@ jobs:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
         run: |
-          ssh -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST << EOF
-
-            # Update package lists
+          ssh -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} << 'EOF'
+            # Ensure Docker commands work
             sudo apt update
+            sudo apt install -y docker.io docker-compose
 
-            # Install Docker if not installed
-            if ! command -v docker &> /dev/null; then
-              sudo apt install -y docker.io
-              sudo systemctl enable docker
-              sudo systemctl start docker
-            fi
+            # Navigate to app directory (create if missing)
+            mkdir -p /home/${EC2_USER}/library-api
+            cd /home/${EC2_USER}/library-api
 
-            # Install Docker Compose if not installed
-            if ! command -v docker-compose &> /dev/null; then
-              sudo apt install -y docker-compose
-            fi
+            # Docker login
+            echo "$DOCKER_PASSWORD" | sudo docker login -u "$DOCKER_USERNAME" --password-stdin
 
-            # Navigate to application directory
-            mkdir -p /home/$EC2_USER/library-api
-            cd /home/$EC2_USER/library-api || exit 1
-            
-            # Log in to Docker Hub
-            echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-            
-            # Pull latest Docker image
-            docker pull $DOCKER_IMAGE
-            
-            # Stop and remove existing containers
-            docker-compose down
-            
-            # Start containers with new image
-            export AUTH_KEY="$AUTH_KEY"
-            docker-compose up -d
-            
-            # Clean up old images
-            docker image prune -af
-            
-            # Verify deployment
-            echo "Waiting for application to start..."
+            # Pull image
+            sudo docker pull $DOCKER_IMAGE
+
+            # Stop/remove container
+            sudo docker stop library-api || true
+            sudo docker rm library-api || true
+
+            # Run container
+            sudo docker run -d --name library-api -p 8000:8000 -e AUTH_KEY="$AUTH_KEY" $DOCKER_IMAGE
+
+            # Verify
             sleep 10
             curl -f http://localhost:8000/health || exit 1
-            echo "Deployment successful!"
           EOF
 
       - name: Verify deployment
