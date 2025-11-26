@@ -236,27 +236,6 @@ Configure these in your GitHub repository settings:
 - `EC2_SSH_KEY`: Private SSH key for EC2 access
 - `AUTH_KEY`: API key for production environment
 
-## Project Structure
-
-```
-library-api/
-├── main.py                 # FastAPI application and endpoints
-├── models.py              # SQLAlchemy ORM models
-├── schemas.py             # Pydantic schemas for validation
-├── database.py            # Database configuration
-├── auth.py                # API key authentication
-├── test_main.py           # Comprehensive test suite
-├── requirements.txt       # Python dependencies
-├── Dockerfile            # Container configuration
-├── docker-compose.yml    # Service orchestration
-├── .env.example          # Environment variables template
-├── .gitignore           # Git ignore rules
-├── .github/
-│   └── workflows/
-│       └── ci-cd.yml    # GitHub Actions pipeline
-└── README.md            # This file
-```
-
 
 ## Troubleshooting
 
