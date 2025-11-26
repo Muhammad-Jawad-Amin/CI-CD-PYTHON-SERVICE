@@ -1,4 +1,4 @@
-name: Python Service PR Tests
+name: Python Service CI Pipeline
 
 on:
   pull_request:
